@@ -7,7 +7,7 @@
                     <port>9000</port>
                 </replica>
                 <replica>
-                    <host>ch-server-3</host>
+                    <host>ch-server-2</host>
                     <port>9000</port>
                 </replica>
                 <internal_replication>true</internal_replication>
