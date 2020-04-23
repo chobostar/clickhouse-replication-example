@@ -1,9 +1,7 @@
 <yandex>
-    <macros replace="replace">
-        <r0shard>01</r0shard>
-        <r0replica>00</r0replica>
-        <r1shard>02</r1shard>
-        <r1replica>01</r1replica>
+    <macros>
         <cluster>ontime_cluster</cluster>
+        <shard>01</shard>
+        <replica>02</replica>
     </macros>
 </yandex>

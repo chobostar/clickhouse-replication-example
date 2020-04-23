@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS default.ontime_schema
+CREATE DATABASE IF NOT EXISTS replicated;
+
+CREATE TABLE IF NOT EXISTS replicated.ontime
 (
     Year UInt16,
     Quarter UInt8,
@@ -110,42 +112,12 @@ CREATE TABLE IF NOT EXISTS default.ontime_schema
     Div5WheelsOff String,
     Div5TailNum String
 )
-ENGINE = MergeTree(
-    FlightDate, (Year, FlightDate), 8192
-);
-
-CREATE DATABASE IF NOT EXISTS r0;
-
-/* Replicates from whomever else has the {shard} znode registered 
- * This replica is {replica}
- */
-CREATE TABLE IF NOT EXISTS r0.ontime AS default.ontime_schema
 ENGINE = ReplicatedMergeTree(
-    '/clickhouse/clusters/ontime_cluster/tables/{r0shard}/ontime',
-    '{r0replica}',
+    '/clickhouse/{cluster}/tables/{shard}/ontime',
+    '{replica}',
     FlightDate,
     (Year, FlightDate),
     8192
 );
 
-CREATE DATABASE IF NOT EXISTS r1;
-
-/* Replicates from whomever else has the {shard} znode registered 
- * This replica is {replica}
- */
-CREATE TABLE IF NOT EXISTS r1.ontime AS default.ontime_schema
-ENGINE = ReplicatedMergeTree(
-    '/clickhouse/clusters/ontime_cluster/tables/{r0shard}/ontime',
-    '{r1replica}',
-    FlightDate,
-    (Year, FlightDate),
-    8192
-);
-
-CREATE TABLE IF NOT EXISTS default.ontime AS default.ontime_schema
-ENGINE = Distributed(
-    'ontime_cluster', 
-    '',
-    ontime
-);
-
+CREATE TABLE replicated.ontime_buffer AS replicated.ontime ENGINE = Buffer(replicated, ontime, 8, 1, 10, 1000, 100000, 1000000, 10000000)
